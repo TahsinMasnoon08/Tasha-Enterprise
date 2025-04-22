@@ -9,8 +9,10 @@
     .navbar-logo {
       height: 45px;
     }
-
-    
+    .user-welcome {
+      font-weight: bold;
+      margin-right: 10px;
+    }
   </style>
 </head>
 <body>
@@ -46,6 +48,11 @@
       <li class="nav-item"><a class="nav-link" href="#">Shop</a></li>
       <li class="nav-item"><a class="nav-link" href="#">About Us</a></li>
       <li class="nav-item"><a class="nav-link" href="#">Contact</a></li>
+      
+      <!-- 👋 User Welcome Message -->
+      <li class="nav-item">
+        <span class="user-welcome">Hi, <%= user.name %></span>
+      </li>
     
       <!-- 👤 User Dropdown with hover -->
       <li class="nav-item dropdown user-dropdown">
@@ -76,7 +83,7 @@
 
 
 <!-- 👋 Welcome -->
-<section class="text-center py-5">
+<section class="text-center py-5" style="margin-top: 150px;">
   <h1>Welcome to Tasha Enterprise</h1>
   <p>Explore premium fashion and lifestyle items</p>
 </section>
