@@ -6,12 +6,104 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
   <style>
+    :root {
+      --primary-color: #3f51b5; /* Blue color to replace the green */
+      --primary-hover: #303f9f;
+      --accent-color: #ff4081;  /* Pink accent color */
+    }
     .navbar-logo {
       height: 45px;
     }
     .user-welcome {
       font-weight: bold;
       margin-right: 10px;
+    }
+    .hero-section {
+      height: 500px;
+      background-size: cover;
+      background-position: center;
+      position: relative;
+      margin-top: 150px;
+    }
+    .hero-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.4);
+    }
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      color: white;
+    }
+    .product-card {
+      transition: transform 0.3s, box-shadow 0.3s;
+      height: 100%;
+    }
+    .product-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    .product-img-container {
+      height: 220px;
+      overflow: hidden;
+    }
+    .product-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s;
+    }
+    .product-card:hover .product-img {
+      transform: scale(1.05);
+    }
+    .section-title {
+      position: relative;
+      display: inline-block;
+      margin-bottom: 40px;
+    }
+    .section-title:after {
+      content: '';
+      position: absolute;
+      width: 50%;
+      height: 3px;
+      background: var(--primary-color);
+      bottom: -10px;
+      left: 25%;
+    }
+    .category-item {
+      cursor: pointer;
+      transition: transform 0.3s;
+    }
+    .category-item:hover {
+      transform: translateY(-5px);
+    }
+    .btn-primary {
+      background-color: var(--primary-color);
+      border-color: var(--primary-color);
+    }
+    .btn-primary:hover {
+      background-color: var(--primary-hover);
+      border-color: var(--primary-hover);
+    }
+    .btn-outline-primary {
+      color: var(--primary-color);
+      border-color: var(--primary-color);
+    }
+    .btn-outline-primary:hover {
+      background-color: var(--primary-color);
+      border-color: var(--primary-color);
+    }
+    .bg-primary-custom {
+      background-color: var(--primary-color);
+    }
+    .badge-primary {
+      background-color: var(--primary-color);
+    }
+    .badge-accent {
+      background-color: var(--accent-color);
     }
   </style>
 </head>
@@ -81,13 +173,200 @@
   </div>
 </nav>
 
-
 <!-- 👋 Welcome -->
 <section class="text-center py-5" style="margin-top: 150px;">
   <h1>Welcome to Tasha Enterprise</h1>
   <p>Explore premium fashion and lifestyle items</p>
 </section>
 
+<!-- 🖼️ Featured Hero Banner Section -->
+<section class="hero-section" style="background-image: url('/images/hero-banner.jpg');">
+  <div class="hero-overlay"></div>
+  <div class="container h-100 d-flex align-items-center">
+    <div class="hero-content col-md-7">
+      <h1 class="display-4 fw-bold mb-3">Discover Your Style</h1>
+      <p class="lead mb-4">Explore our newest collection of premium fashion items designed for comfort and style</p>
+      <a href="#" class="btn btn-primary btn-lg px-4">Shop Now</a>
+    </div>
+  </div>
+</section>
+
+<!-- 🛍️ Featured Categories -->
+<section class="py-5 bg-light">
+  <div class="container">
+    <h2 class="text-center section-title">Shop by Category</h2>
+    <div class="row g-4">
+      <div class="col-6 col-md-3">
+        <div class="category-item text-center">
+          <div class="bg-white rounded-circle p-3 shadow-sm mx-auto mb-3" style="width: 120px; height: 120px;">
+            <img src="/api/placeholder/100/100" alt="Category" class="img-fluid" style="width: 100%; height: 100%; object-fit: contain;">
+          </div>
+          <h5>Women's Fashion</h5>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="category-item text-center">
+          <div class="bg-white rounded-circle p-3 shadow-sm mx-auto mb-3" style="width: 120px; height: 120px;">
+            <img src="/api/placeholder/100/100" alt="Category" class="img-fluid" style="width: 100%; height: 100%; object-fit: contain;">
+          </div>
+          <h5>Men's Collection</h5>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="category-item text-center">
+          <div class="bg-white rounded-circle p-3 shadow-sm mx-auto mb-3" style="width: 120px; height: 120px;">
+            <img src="/api/placeholder/100/100" alt="Category" class="img-fluid" style="width: 100%; height: 100%; object-fit: contain;">
+          </div>
+          <h5>Accessories</h5>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="category-item text-center">
+          <div class="bg-white rounded-circle p-3 shadow-sm mx-auto mb-3" style="width: 120px; height: 120px;">
+            <img src="/api/placeholder/100/100" alt="Category" class="img-fluid" style="width: 100%; height: 100%; object-fit: contain;">
+          </div>
+          <h5>Footwear</h5>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 🆕 New Arrivals -->
+<section class="py-5">
+  <div class="container">
+    <h2 class="text-center section-title">New Arrivals</h2>
+    <div class="row g-4">
+      <!-- Product cards with placeholder content -->
+      <% for(let i = 0; i < 4; i++) { %>
+        <div class="col-6 col-md-3">
+          <div class="card product-card border-0 shadow-sm">
+            <div class="product-img-container">
+              <img src="/api/placeholder/400/320" class="card-img-top product-img" alt="Product">
+            </div>
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <h5 class="card-title mb-0"><!-- Dynamic product name --></h5>
+                <span class="badge bg-primary">New</span>
+              </div>
+              <p class="card-text text-muted small"><!-- Dynamic product description --></p>
+              <div class="d-flex justify-content-between align-items-center">
+                <span class="fw-bold"><!-- Dynamic price --></span>
+                <a href="#" class="btn btn-sm btn-outline-primary">Add to Cart</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% } %>
+    </div>
+    <div class="text-center mt-4">
+      <a href="#" class="btn btn-outline-primary px-4">View All New Arrivals</a>
+    </div>
+  </div>
+</section>
+
+<!-- 🌟 Featured Products -->
+<section class="py-5 bg-light">
+  <div class="container">
+    <h2 class="text-center section-title">Featured Products</h2>
+    <div class="row g-4">
+      <!-- Featured product cards with placeholder content -->
+      <% for(let i = 0; i < 3; i++) { %>
+        <div class="col-md-4">
+          <div class="card product-card border-0 shadow-sm h-100">
+            <div class="product-img-container">
+              <img src="/api/placeholder/400/320" class="card-img-top product-img" alt="Featured Product">
+              <div class="position-absolute top-0 end-0 p-2">
+                <span class="badge badge-accent">Featured</span>
+              </div>
+            </div>
+            <div class="card-body">
+              <h5 class="card-title"><!-- Dynamic product name --></h5>
+              <p class="card-text"><!-- Dynamic product description --></p>
+              <div class="d-flex justify-content-between align-items-center mt-3">
+                <span class="fw-bold fs-5"><!-- Dynamic price --></span>
+                <a href="#" class="btn btn-primary">Shop Now</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% } %>
+    </div>
+  </div>
+</section>
+
+<!-- 📱 Newsletter & Promotions -->
+<section class="py-5 bg-primary-custom text-white">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-6 mb-4 mb-lg-0">
+        <h2>Join Our Newsletter</h2>
+        <p>Subscribe to receive updates on new arrivals, special offers and other discount information.</p>
+      </div>
+      <div class="col-lg-6">
+        <form class="d-flex">
+          <input type="email" class="form-control form-control-lg me-2" placeholder="Your email address">
+          <button class="btn btn-light btn-lg px-4" type="submit">Subscribe</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 👣 Footer -->
+<footer class="bg-dark text-white py-5">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-md-4">
+        <img src="/images/tashalogo.png" alt="Tasha Logo" height="60" class="mb-3 bg-white p-2 rounded">
+        <p>Premium fashion and lifestyle items for the modern individual. Quality meets style at Tasha Enterprise.</p>
+        <div class="d-flex gap-3 mt-3">
+          <a href="#" class="text-white"><i class="bi bi-facebook"></i></a>
+          <a href="#" class="text-white"><i class="bi bi-instagram"></i></a>
+          <a href="#" class="text-white"><i class="bi bi-twitter"></i></a>
+        </div>
+      </div>
+      <div class="col-md-2">
+        <h5 class="mb-3">Shop</h5>
+        <ul class="list-unstyled">
+          <li class="mb-2"><a href="#" class="text-decoration-none text-white-50">Men's Collection</a></li>
+          <li class="mb-2"><a href="#" class="text-decoration-none text-white-50">Women's Fashion</a></li>
+          <li class="mb-2"><a href="#" class="text-decoration-none text-white-50">Accessories</a></li>
+          <li><a href="#" class="text-decoration-none text-white-50">Footwear</a></li>
+        </ul>
+      </div>
+      <div class="col-md-2">
+        <h5 class="mb-3">Account</h5>
+        <ul class="list-unstyled">
+          <li class="mb-2"><a href="#" class="text-decoration-none text-white-50">My Account</a></li>
+          <li class="mb-2"><a href="#" class="text-decoration-none text-white-50">Orders</a></li>
+          <li class="mb-2"><a href="#" class="text-decoration-none text-white-50">Wishlist</a></li>
+          <li><a href="#" class="text-decoration-none text-white-50">Cart</a></li>
+        </ul>
+      </div>
+      <div class="col-md-4">
+        <h5 class="mb-3">Contact Us</h5>
+        <p class="mb-1"><i class="bi bi-geo-alt me-2"></i> 123 Fashion Street, City, Country</p>
+        <p class="mb-1"><i class="bi bi-telephone me-2"></i> +1 (123) 456-7890</p>
+        <p><i class="bi bi-envelope me-2"></i> contact@tashaenterprise.com</p>
+      </div>
+    </div>
+    <hr class="my-4">
+    <div class="row">
+      <div class="col-md-6 mb-3 mb-md-0">
+        <p class="mb-0">&copy; 2025 Tasha Enterprise. All rights reserved.</p>
+      </div>
+      <div class="col-md-6 text-md-end">
+        <a href="#" class="text-decoration-none text-white-50 me-3">Privacy Policy</a>
+        <a href="#" class="text-decoration-none text-white-50 me-3">Terms of Service</a>
+        <a href="#" class="text-decoration-none text-white-50">FAQ</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Bootstrap Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css">
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
