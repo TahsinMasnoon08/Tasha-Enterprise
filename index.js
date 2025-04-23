@@ -1,3 +1,4 @@
+// index.js
 const express = require("express");
 const mysql = require("mysql");
 const bodyParser = require("body-parser");
@@ -7,7 +8,6 @@ const session = require("express-session");
 const app = express();
 const port = 3000;
 
-// Middleware
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 app.set("view engine", "ejs");
@@ -28,13 +28,13 @@ const db = mysql.createConnection({
 
 db.connect((err) => {
   if (err) {
-    console.error("❌ DB connection failed:", err);
+    console.error("\u274C DB connection failed:", err);
   } else {
-    console.log("✅ Connected to MySQL (tasha_db)");
+    console.log("\u2705 Connected to MySQL (tasha_db)");
   }
 });
 
-// ROUTES
+// Routes
 app.get("/", (req, res) => {
   res.redirect("/login");
 });
@@ -59,7 +59,7 @@ app.post("/signup", (req, res) => {
   });
 });
 
-// ✅ Final combined login logic
+// Unified login
 app.post("/login", (req, res) => {
   const { email, password } = req.body;
 
@@ -79,7 +79,6 @@ app.post("/login", (req, res) => {
         }
       });
     } else {
-      // ✅ Check in admin table if user not found
       db.query("SELECT * FROM admin WHERE email = ?", [email], (err, adminResults) => {
         if (err) return res.send("Database error (admin)");
 
@@ -103,13 +102,39 @@ app.post("/login", (req, res) => {
   });
 });
 
-// ✅ Home route
+// Home route for both user and admin
 app.get("/home", (req, res) => {
   if (!req.session.user) return res.redirect("/login");
 
-  res.render("home", {
+  const sql = "SELECT * FROM products WHERE featured = 1";
+  db.query(sql, (err, products) => {
+    if (err) return res.send("Error fetching featured products");
+
+    res.render("home", {
+      user: req.session.user,
+      role: req.session.role,
+      featuredProducts: products
+    });
+  });
+});
+
+// Admin dashboard route (optional)
+app.get("/admin/dashboard", (req, res) => {
+  if (!req.session.user || req.session.role !== "admin") return res.redirect("/login");
+
+  res.render("admin-dashboard", {
     user: req.session.user,
     role: req.session.role
+  });
+});
+
+// Add Product POST
+app.post("/admin/add-product", (req, res) => {
+  const { name, price, description, image, featured } = req.body;
+  const sql = "INSERT INTO products (name, price, description, image, featured) VALUES (?, ?, ?, ?, ?)";
+  db.query(sql, [name, price, description, image, featured ? 1 : 0], (err) => {
+    if (err) return res.send("\u274C Failed to add product");
+    res.redirect("/admin/dashboard");
   });
 });
 
@@ -119,5 +144,5 @@ app.get("/logout", (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`🚀 Server running on http://localhost:${port}`);
+  console.log(`\uD83D\uDE80 Server running on http://localhost:${port}`);
 });
