@@ -30,11 +30,11 @@ db.connect((err) => {
   if (err) {
     console.error("❌ DB connection failed:", err);
   } else {
-    console.log("✅ Connected to MySQL");
+    console.log("✅ Connected to MySQL (tasha_db)");
   }
 });
 
-// Routes
+// ROUTES
 app.get("/", (req, res) => {
   res.redirect("/login");
 });
@@ -59,31 +59,58 @@ app.post("/signup", (req, res) => {
   });
 });
 
-// ✅ Login using session
+// ✅ Final combined login logic
 app.post("/login", (req, res) => {
   const { email, password } = req.body;
-  const sql = "SELECT * FROM users WHERE email = ?";
-  db.query(sql, [email], (err, results) => {
-    if (err) throw err;
-    if (results.length === 0) return res.send("No user found.");
-    
-    const user = results[0];
-    bcrypt.compare(password, user.password, (err, match) => {
-      if (err) throw err;
-      if (match) {
-        req.session.user = user; // ✅ Save user info in session
-        res.redirect("/home");
-      } else {
-        res.send("Wrong password.");
-      }
-    });
+
+  db.query("SELECT * FROM users WHERE email = ?", [email], (err, userResults) => {
+    if (err) return res.send("Database error (users)");
+
+    if (userResults.length > 0) {
+      const user = userResults[0];
+      bcrypt.compare(password, user.password, (err, match) => {
+        if (err) return res.send("Error comparing password (user)");
+        if (match) {
+          req.session.user = user;
+          req.session.role = "user";
+          return res.redirect("/home");
+        } else {
+          return res.send("Wrong password (user)");
+        }
+      });
+    } else {
+      // ✅ Check in admin table if user not found
+      db.query("SELECT * FROM admin WHERE email = ?", [email], (err, adminResults) => {
+        if (err) return res.send("Database error (admin)");
+
+        if (adminResults.length > 0) {
+          const admin = adminResults[0];
+          bcrypt.compare(password, admin.password, (err, match) => {
+            if (err) return res.send("Error comparing password (admin)");
+            if (match) {
+              req.session.user = admin;
+              req.session.role = "admin";
+              return res.redirect("/home");
+            } else {
+              return res.send("Wrong password (admin)");
+            }
+          });
+        } else {
+          return res.send("No user or admin found with that email.");
+        }
+      });
+    }
   });
 });
 
-// ✅ Home page, render EJS with session data
+// ✅ Home route
 app.get("/home", (req, res) => {
   if (!req.session.user) return res.redirect("/login");
-  res.render("home", { user: req.session.user });
+
+  res.render("home", {
+    user: req.session.user,
+    role: req.session.role
+  });
 });
 
 app.get("/logout", (req, res) => {
