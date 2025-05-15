@@ -73,7 +73,8 @@
 <body>
 
 <!-- ✅ Navbar (same as home.ejs, no Hi, user) -->
-<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm position-fixed w-100 z-3">
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm w-100 z-3">
+
   <div class="container d-flex align-items-center justify-content-between">
     <a class="navbar-brand d-flex align-items-center me-3" href="/">
       <img src="/images/tashalogo.png" alt="Tasha Logo" height="150" width="200">
@@ -113,13 +114,14 @@
 </nav>
 
 <!-- 🔘 Filters -->
-<div class="filter-bar">
+<div class="filter-bar" style="margin-top: 30px;">
+
   <div class="filter-group">
     <a class="filter-link <%= title === 'Women' ? 'active' : '' %>" href="/category?group=women">Women</a>
     <a class="filter-link <%= title === 'Men' ? 'active' : '' %>" href="/category?group=men">Men</a>
     <a class="filter-link <%= title === 'Kids' ? 'active' : '' %>" href="/category?group=kids">Kids</a>
   </div>
-  <div class="filter-category">
+  <div class="filter-category mt-3">
     <a class="filter-link sale-link" href="/category?group=<%= title.toLowerCase() %>&sale=true">Sale</a>
     <a class="filter-link" href="/category?group=<%= title.toLowerCase() %>&category=new">New In</a>
     <a class="filter-link" href="/category?group=<%= title.toLowerCase() %>&category=clothing">Clothing</a>
@@ -128,6 +130,7 @@
     <a class="filter-link" href="/category?group=<%= title.toLowerCase() %>&category=bag">Bag</a>
   </div>
 </div>
+
 
 <!-- 🛍️ Product Grid -->
 <div class="container">

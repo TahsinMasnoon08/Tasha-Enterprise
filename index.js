@@ -7,7 +7,9 @@ const session = require("express-session");
 const app = express();
 const port = 3000;
 
+// Middleware
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.json());
 app.use(express.static("public"));
 app.set("view engine", "ejs");
 
@@ -17,7 +19,7 @@ app.use(session({
   saveUninitialized: true
 }));
 
-// DB connection
+// MySQL connection
 const db = mysql.createConnection({
   host: "localhost",
   user: "root",
@@ -34,100 +36,168 @@ db.connect(err => {
 });
 
 // Routes
+
 app.get("/", (req, res) => res.redirect("/login"));
 
-app.get("/login", (req, res) => res.render("login"));
-app.get("/signup", (req, res) => res.render("signup"));
-
-app.post("/signup", (req, res) => {
-  const { name, email, password } = req.body;
-  bcrypt.hash(password, 10, (err, hashedPassword) => {
-    if (err) return res.send("Error hashing password");
-    const sql = "INSERT INTO users (name, email, password) VALUES (?, ?, ?)";
-    db.query(sql, [name, email, hashedPassword], (err) => {
-      if (err) return res.send("Email already used or DB error.");
-      res.send("Signup successful. <a href='/login'>Login now</a>");
-    });
-  });
+app.get("/login", (req, res) => {
+  res.render("login");
 });
 
+app.get("/signup", (req, res) => {
+  res.render("signup");
+});
+
+// Login with bcrypt
 app.post("/login", (req, res) => {
   const { email, password } = req.body;
-  db.query("SELECT * FROM users WHERE email = ?", [email], (err, userResults) => {
-    if (err) return res.send("Database error (users)");
-    if (userResults.length > 0) {
-      const user = userResults[0];
-      bcrypt.compare(password, user.password, (err, match) => {
-        if (err) return res.send("Error comparing password (user)");
-        if (match) {
-          req.session.user = user;
-          req.session.role = "user";
+
+  db.query("SELECT * FROM admin WHERE email = ?", [email], (err, adminResults) => {
+    if (err) throw err;
+
+    if (adminResults.length > 0) {
+      const admin = adminResults[0];
+
+      bcrypt.compare(password, admin.password, (err, result) => {
+        if (err) throw err;
+
+        if (result) {
+          req.session.user = admin;
+          req.session.role = "admin"; // ✅ role set here
           return res.redirect("/home");
-        } else {
-          return res.send("Wrong password (user)");
         }
+
+        checkUser();
       });
     } else {
-      db.query("SELECT * FROM admin WHERE email = ?", [email], (err, adminResults) => {
-        if (err) return res.send("Database error (admin)");
-        if (adminResults.length > 0) {
-          const admin = adminResults[0];
-          bcrypt.compare(password, admin.password, (err, match) => {
-            if (err) return res.send("Error comparing password (admin)");
-            if (match) {
-              req.session.user = admin;
-              req.session.role = "admin";
+      checkUser();
+    }
+
+    function checkUser() {
+      db.query("SELECT * FROM users WHERE email = ?", [email], (err, userResults) => {
+        if (err) throw err;
+
+        if (userResults.length > 0) {
+          const user = userResults[0];
+
+          bcrypt.compare(password, user.password, (err, result) => {
+            if (err) throw err;
+
+            if (result) {
+              req.session.user = user;
+              req.session.role = "user"; // ✅ role set here
               return res.redirect("/home");
             } else {
-              return res.send("Wrong password (admin)");
+              res.send("Invalid email or password.");
             }
           });
         } else {
-          return res.send("No user or admin found with that email.");
+          res.send("Invalid email or password.");
         }
       });
     }
   });
 });
 
+// Home page with featured products
 app.get("/home", (req, res) => {
   if (!req.session.user) return res.redirect("/login");
-  db.query("SELECT * FROM products WHERE featured = 1", (err, products) => {
-    if (err) return res.send("Error loading home page");
+
+  const role = req.session.role || "user";
+
+  db.query("SELECT * FROM products WHERE featured = 1", (err, featuredResults) => {
+    if (err) throw err;
+
     res.render("home", {
       user: req.session.user,
-      role: req.session.role,
-      featuredProducts: products
+      role,
+      featuredProducts: featuredResults
     });
   });
 });
 
+// ✅ Admin Dashboard (fixed)
 app.get("/admin/dashboard", (req, res) => {
-  if (!req.session.user || req.session.role !== "admin") return res.redirect("/login");
-  res.render("admin-dashboard", {
-    user: req.session.user,
-    role: req.session.role
+  const action = req.query.action || "";
+
+  if (!req.session.user || req.session.role !== "admin") {
+    return res.send("Unauthorized access.");
+  }
+
+  if (action === "view") {
+    db.query("SELECT * FROM products", (err, results) => {
+      if (err) throw err;
+      res.render("admin-dashboard", { action, products: results });
+    });
+  } else {
+    res.render("admin-dashboard", { action });
+  }
+});
+
+// Add product
+app.post("/admin/add-product", (req, res) => {
+  const { name, target_group, category, price, image, description, featured } = req.body;
+
+  const isFeatured = parseInt(featured) === 1 ? 1 : 0;
+
+  const sql = `
+    INSERT INTO products (name, target_group, category, price, image, description, featured)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+  `;
+
+  db.query(sql, [name, target_group, category, price, image, description, isFeatured], (err) => {
+    if (err) throw err;
+    res.redirect("/admin/dashboard?action=view");
   });
 });
 
-app.post("/admin/add-product", (req, res) => {
+
+
+// Delete product
+app.get("/admin/delete/:id", (req, res) => {
+  const productId = req.params.id;
+  db.query("DELETE FROM products WHERE id = ?", [productId], (err) => {
+    if (err) throw err;
+    res.redirect("/admin/dashboard?action=view");
+  });
+});
+
+// Admin Edit
+app.get("/admin/edit/:id", (req, res) => {
+  const productId = req.params.id;
+  const sql = "SELECT * FROM products WHERE id = ?";
+  db.query(sql, [productId], (err, results) => {
+    if (err) return res.send("Error loading product.");
+    if (results.length === 0) return res.send("Product not found.");
+
+    res.render("admin-edit-product", {
+      product: results[0],
+      user: req.session.user,
+      role: req.session.role
+    });
+  });
+});
+
+app.post("/admin/edit/:id", (req, res) => {
+  const productId = req.params.id;
   const { name, price, description, image, featured, target_group, category } = req.body;
-  const sql = "INSERT INTO products (name, price, description, image, featured, target_group, category) VALUES (?, ?, ?, ?, ?, ?, ?)";
-  db.query(sql, [name, price, description, image, featured ? 1 : 0, target_group, category], (err) => {
+
+  const sql = `
+    UPDATE products
+    SET name = ?, price = ?, description = ?, image = ?, featured = ?, target_group = ?, category = ?
+    WHERE id = ?
+  `;
+  const values = [name, price, description, image, featured ? 1 : 0, target_group, category, productId];
+
+  db.query(sql, values, (err) => {
     if (err) {
-      console.error("Add Product Error:", err);
-      return res.send("❌ Failed to add product");
+      console.error("Edit Product Error:", err);
+      return res.send("❌ Failed to update product");
     }
     res.redirect("/admin/dashboard");
   });
 });
 
-// Redirect legacy routes to new category
-app.get("/women", (req, res) => res.redirect("/category?group=women"));
-app.get("/men", (req, res) => res.redirect("/category?group=men"));
-app.get("/kids", (req, res) => res.redirect("/category?group=kids"));
-
-// Category route using only category.ejs
+// Category page (user side)
 app.get("/category", (req, res) => {
   const group = req.query.group;
   const category = req.query.category;
@@ -146,6 +216,7 @@ app.get("/category", (req, res) => {
 
   db.query(sql, params, (err, results) => {
     if (err) return res.send("Error fetching category products");
+
     res.render("category", {
       products: results,
       user: req.session.user,
@@ -155,11 +226,13 @@ app.get("/category", (req, res) => {
   });
 });
 
+// Logout
 app.get("/logout", (req, res) => {
   req.session.destroy();
   res.redirect("/login");
 });
 
+// Start server
 app.listen(port, () => {
-  console.log(`🚀 Server running on http://localhost:${port}`);
+  console.log(`🚀 Server running at http://localhost:${port}`);
 });
