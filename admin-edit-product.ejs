@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Edit Product</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body class="p-4">
+  <div class="container">
+    <h2>Edit Product</h2>
+    <form action="/admin/edit/<%= product.id %>" method="POST">
+      <div class="mb-3">
+        <label>Product Name</label>
+        <input type="text" name="name" value="<%= product.name %>" class="form-control" required>
+      </div>
+
+      <div class="mb-3">
+        <label>Target Group</label>
+        <select name="target_group" class="form-control" required>
+          <option value="Men" <%= product.target_group === 'Men' ? 'selected' : '' %>>Men</option>
+          <option value="Women" <%= product.target_group === 'Women' ? 'selected' : '' %>>Women</option>
+          <option value="Kids" <%= product.target_group === 'Kids' ? 'selected' : '' %>>Kids</option>
+        </select>
+      </div>
+
+      <div class="mb-3">
+        <label>Category</label>
+        <select name="category" class="form-control" required>
+          <option value="Clothing" <%= product.category === 'Clothing' ? 'selected' : '' %>>Clothing</option>
+          <option value="Shoes" <%= product.category === 'Shoes' ? 'selected' : '' %>>Shoes</option>
+          <option value="Accessories" <%= product.category === 'Accessories' ? 'selected' : '' %>>Accessories</option>
+          <option value="Bag" <%= product.category === 'Bag' ? 'selected' : '' %>>Bag</option>
+          <option value="Sale" <%= product.category === 'Sale' ? 'selected' : '' %>>Sale</option>
+          <option value="New In" <%= product.category === 'New In' ? 'selected' : '' %>>New In</option>
+        </select>
+      </div>
+
+      <div class="mb-3">
+        <label>Price</label>
+        <input type="number" name="price" value="<%= product.price %>" class="form-control" required>
+      </div>
+
+      <div class="mb-3">
+        <label>Description</label>
+        <textarea name="description" class="form-control"><%= product.description %></textarea>
+      </div>
+
+      <div class="mb-3">
+        <label>Image URL</label>
+        <input type="text" name="image" value="<%= product.image %>" class="form-control" required>
+      </div>
+
+      <div class="mb-3">
+        <label>Featured?</label>
+        <select name="featured" class="form-control">
+          <option value="1" <%= product.featured ? 'selected' : '' %>>Yes</option>
+          <option value="0" <%= !product.featured ? 'selected' : '' %>>No</option>
+        </select>
+      </div>
+
+      <button type="submit" class="btn btn-success">Update Product</button>
+      <a href="/admin/dashboard" class="btn btn-secondary">Cancel</a>
+    </form>
+  </div>
+</body>
+</html>

@@ -1,0 +1,54 @@
+<!-- Add Product Form -->
+<form action="/admin/add-product" method="POST">
+  <div class="form-group mb-3">
+    <label>Product Name</label>
+    <input type="text" name="name" class="form-control" required>
+  </div>
+
+  <div class="form-group mb-3">
+    <label>Gender / Target Group</label>
+    <select name="target_group" class="form-control" required>
+      <option value="Men">Men</option>
+      <option value="Women">Women</option>
+      <option value="Kids">Kids</option>
+    </select>
+  </div>
+
+  <div class="form-group mb-3">
+    <label>Category</label>
+    <select name="category" class="form-control" required>
+      <option value="Clothing">Clothing</option>
+      <option value="Shoes">Shoes</option>
+      <option value="Accessories">Accessories</option>
+      <option value="Bag">Bag</option>
+      <option value="Sale">Sale</option>
+      <option value="New In">New In</option>
+    </select>
+  </div>
+
+  <div class="form-group mb-3">
+    <label>Price (in BDT)</label>
+    <input type="number" name="price" class="form-control" required>
+  </div>
+
+  <div class="form-group mb-3">
+    <label>Description</label>
+    <textarea name="description" class="form-control" rows="3"></textarea>
+  </div>
+
+  <div class="form-group mb-3">
+    <label>Image URL</label>
+    <!-- ✅ FIXED: make sure this uses name="image" to match your DB -->
+    <input type="text" name="image" class="form-control" required>
+  </div>
+
+  <div class="form-group mb-4">
+    <label>Featured?</label>
+    <select name="featured" class="form-control">
+      <option value="0">No</option>
+      <option value="1">Yes</option>
+    </select>
+  </div>
+
+  <button type="submit" class="btn btn-success">+ Add Product</button>
+</form>

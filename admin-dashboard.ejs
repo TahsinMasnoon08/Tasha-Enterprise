@@ -1,61 +1,56 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
   <title>Admin Dashboard</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
+    .sidebar {
+      height: 100vh;
+      background-color: #f8f9fa;
+      padding-top: 20px;
+    }
+    .sidebar a {
+      margin: 10px 0;
+    }
+    .active-link {
+      background-color: #007bff;
+      color: white;
+    }
+    .dashboard-title {
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    .content-area {
+      padding: 30px;
+    }
+  </style>
 </head>
-<body class="p-5">
+<body>
+  <div class="container-fluid">
+    <div class="row">
+      <!-- Sidebar -->
+      <nav class="col-md-3 sidebar d-flex flex-column">
+        <h4 class="text-center">Admin Dashboard</h4>
+        <a href="/admin/dashboard?action=view" class="list-group-item list-group-item-action <%= action === 'view' ? 'active-link' : '' %>">Products</a>
+        <a href="#" class="list-group-item list-group-item-action">Sales</a>
+        <a href="#" class="list-group-item list-group-item-action">Analytics</a>
+        <a href="#" class="list-group-item list-group-item-action">Orders</a>
+      </nav>
 
-  <div class="container">
-    <h2 class="mb-4">Add New Product</h2>
-
-    <form action="/admin/add-product" method="POST" class="row g-3">
-      <div class="col-md-6">
-        <input type="text" name="name" class="form-control" placeholder="Product Name" required>
+      <!-- Main Content -->
+      <div class="col-md-9 content-area">
+        <% if (action === 'view') { %>
+          <h3 class="dashboard-title">Manage Products</h3>
+          <%- include('admin-products') %>
+        <% } else if (action === 'add') { %>
+          <h3 class="dashboard-title">Add New Product</h3>
+          <%- include('admin-add-product') %>
+        <% } else { %>
+          <p>Select an option from the sidebar.</p>
+        <% } %>
       </div>
-      <div class="col-md-6">
-        <input type="number" step="0.01" name="price" class="form-control" placeholder="Price" required>
-      </div>
-      <div class="col-12">
-        <textarea name="description" class="form-control" placeholder="Description" required></textarea>
-      </div>
-      <div class="col-12">
-        <input type="text" name="image" class="form-control" placeholder="Image URL" required>
-      </div>
-
-      <!-- Gender Selector -->
-      <div class="col-md-6">
-        <select name="target_group" class="form-select" required>
-          <option value="">Select Target Group</option>
-          <option value="women">Women</option>
-          <option value="men">Men</option>
-          <option value="kids">Kids</option>
-        </select>
-      </div>
-
-      <!-- Category Selector -->
-      <div class="col-md-6">
-        <select name="category" class="form-select" required>
-          <option value="">Select Category</option>
-          <option value="new">New In</option>
-          <option value="clothing">Clothing</option>
-          <option value="shoes">Shoes</option>
-          <option value="accessories">Accessories</option>
-          <option value="bag">Bag</option>
-        </select>
-      </div>
-
-      <!-- Featured Checkbox -->
-      <div class="col-12 form-check">
-        <input type="checkbox" name="featured" class="form-check-input" id="featured">
-        <label class="form-check-label" for="featured">Feature this product</label>
-      </div>
-
-      <div class="col-12">
-        <button class="btn btn-success w-100">Add Product</button>
-      </div>
-    </form>
+    </div>
   </div>
-
 </body>
 </html>
