@@ -1,0 +1,98 @@
+<form action="/admin/add-product" method="POST" enctype="multipart/form-data">
+  <div class="form-group mb-3">
+    <label>Product Name</label>
+    <input type="text" name="name" class="form-control" required>
+  </div>
+
+  <div class="form-group mb-3">
+    <label>Gender / Target Group</label>
+    <select name="target_group" class="form-control" required>
+      <option value="Men">Men</option>
+      <option value="Women">Women</option>
+      <option value="Kids">Kids</option>
+    </select>
+  </div>
+
+  <div class="form-group mb-3">
+    <label>Category</label>
+    <select name="category" class="form-control" id="category" onchange="updateSizeOptions()" required>
+      <option value="Clothing">Clothing</option>
+      <option value="Shoes">Shoes</option>
+      <option value="Bag">Bag</option>
+      <option value="Accessories">Accessories</option>
+    </select>
+  </div>
+
+  <!-- ✅ Mark as New In -->
+  <div class="form-check mb-3">
+    <input class="form-check-input" type="checkbox" id="newInCheckbox" name="new_in" value="1">
+    <label class="form-check-label" for="newInCheckbox">Mark as New In</label>
+  </div>
+
+  <div class="form-group mb-3" id="size-options">
+    <!-- JS will populate size inputs -->
+  </div>
+
+  <div class="form-group mb-3">
+    <label>Price(RM)</label>
+    <input type="number" name="price" class="form-control" required>
+  </div>
+
+  <div class="form-group mb-3">
+    <label>Sale Price (optional)</label>
+    <input type="number" name="sale_price" class="form-control" placeholder="Leave blank if not on sale">
+  </div>
+
+  <div class="form-group mb-3">
+    <label>Description</label>
+    <textarea name="description" class="form-control" rows="3"></textarea>
+  </div>
+
+  <div class="form-group mb-3">
+    <label>Upload Images</label>
+    <input type="file" name="images" class="form-control" multiple required>
+  </div>
+
+  <div class="form-group mb-4">
+    <label>Featured?</label>
+    <select name="featured" class="form-control">
+      <option value="0">No</option>
+      <option value="1">Yes</option>
+    </select>
+  </div>
+
+  <button type="submit" class="btn btn-success">+ Add Product</button>
+</form>
+
+<!-- ✅ Script for dynamic sizes -->
+<script>
+  function updateSizeOptions() {
+    const cat = document.getElementById('category').value;
+    const container = document.getElementById('size-options');
+    let html = '';
+    if (cat === 'Clothing' || cat === 'New In') {
+      html = `<label>Sizes & Stock</label><br>
+        ${['S','M','L','XL'].map(size => `
+          <div class='form-check form-check-inline'>
+            <input class='form-check-input' type='checkbox' name='sizes' value='${size}'> ${size}
+            <input type='number' name='stock_${size}' class='form-control ms-2 d-inline-block' style='width:80px;' placeholder='Stock' required>
+          </div>`).join('')}`;
+    } else if (cat === 'Shoes') {
+      html = `<label>Sizes & Stock</label><br>`;
+      for (let i = 36; i <= 45; i++) {
+        html += `<div class='form-check form-check-inline'>
+          <input class='form-check-input' type='checkbox' name='sizes' value='${i}'> ${i}
+          <input type='number' name='stock_${i}' class='form-control ms-2 d-inline-block' style='width:80px;' placeholder='Stock' required>
+        </div>`;
+      }
+    } else if (cat === 'Bag' || cat === 'Accessories') {
+      html = `<label>Size</label>
+        <input type='text' name='sizes' value='One Size' class='form-control' readonly>
+        <input type='number' name='stock_OneSize' class='form-control mt-2' placeholder='Stock' required>`;
+    }
+    container.innerHTML = html;
+  }
+
+  // ✅ Trigger default category on page load
+  window.onload = updateSizeOptions;
+</script>

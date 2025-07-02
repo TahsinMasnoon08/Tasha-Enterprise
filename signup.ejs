@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Signup - Tasha Enterprise</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/style.css" rel="stylesheet">
+  <style>
+/* ✅ Shared form styling */
+.form-hero {
+  background: linear-gradient(135deg, #3f51b5, #1a237e);
+  background-size: cover;
+  height: 100vh;
+  position: relative;
+}
+.form-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+}
+.form-wrapper {
+  position: relative;
+  z-index: 2;
+  max-width: 500px;
+  margin: 100px auto 0 auto;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 40px 30px;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(63, 81, 181, 0.4);
+  border: 1px solid rgba(63, 81, 181, 0.4);
+  animation: fadeGlow 0.6s ease-in-out;
+}
+.form-wrapper h3 {
+  font-size: 28px;
+  font-weight: 700;
+  text-align: center;
+  color: #1a237e;
+  margin-bottom: 30px;
+  text-shadow: 1px 1px 1px #ccc;
+}
+.form-control {
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-size: 15px;
+  border: 1px solid #c5cae9;
+  box-shadow: 0 0 5px rgba(63, 81, 181, 0.2);
+  transition: all 0.3s ease-in-out;
+}
+.form-control:focus {
+  border-color: #3f51b5;
+  box-shadow: 0 0 10px rgba(63, 81, 181, 0.5);
+}
+.btn-success {
+  background-color: #3f51b5;
+  border: none;
+  border-radius: 10px;
+  padding: 12px;
+  font-size: 16px;
+  font-weight: 500;
+  transition: all 0.3s ease-in-out;
+  box-shadow: 0 0 10px rgba(63, 81, 181, 0.4);
+}
+.btn-success:hover {
+  background-color: #3949ab;
+  box-shadow: 0 0 15px rgba(63, 81, 181, 0.7);
+}
+p a {
+  color: #3f51b5;
+  font-weight: 500;
+  text-decoration: none;
+}
+p a:hover {
+  text-decoration: underline;
+}
+@keyframes fadeGlow {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@media (max-width: 576px) {
+  .form-wrapper {
+    margin: 80px 20px 0 20px;
+    padding: 30px 20px;
+  }
+  .form-wrapper h3 {
+    font-size: 22px;
+  }
+  .btn-success {
+    font-size: 15px;
+    padding: 10px;
+  }
+  .form-control {
+    padding: 10px 14px;
+    font-size: 14px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .form-wrapper {
+    max-width: 600px;
+  }
+}
+
+</style>
+
+
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm position-fixed w-100 z-3">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center" href="/">
+        <img src="/images/tashalogo.png" alt="Tasha Logo" height="150" width="200">
+       
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+        <ul class="navbar-nav">
+          
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- 👤 Signup Form Section -->
+  <section class="form-hero d-flex align-items-center">
+    <div class="form-wrapper">
+      <h3>Create Your Account</h3>
+      <form action="/signup" method="post">
+        <input name="name" type="text" class="form-control mb-3" placeholder="Full Name" required>
+        <input name="email" type="email" class="form-control mb-3"
+       placeholder="Email Address"
+       pattern="^[a-zA-Z0-9._%+-]+@(gmail\.com|yahoo\.com|hotmail\.com)$"
+       title="Only Gmail, Yahoo, or Hotmail addresses are allowed"
+       required>
+
+        <input name="password" type="password" class="form-control mb-4" placeholder="Password" required>
+        <button type="submit" class="btn btn-success w-100">Sign Up</button>
+      </form>
+      <p class="text-center mt-3">
+        Already have an account? <a href="/login">Login here</a>
+      </p>
+    </div>
+  </section>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

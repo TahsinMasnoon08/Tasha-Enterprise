@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Dashboard</title>
+  <!-- ✅ Bootstrap 5.3 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .sidebar {
+      height: 100vh;
+      background-color: #f8f9fa;
+      padding-top: 20px;
+    }
+    .sidebar a {
+      margin: 10px 0;
+    }
+    .active-link {
+      background-color: #007bff;
+      color: white;
+    }
+    .dashboard-title {
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    .content-area {
+      padding: 30px;
+    }
+
+    .nav-pills .nav-link.active {
+  background-color: #3f51b5;
+  color: white !important;
+}
+.nav-link:hover {
+  background-color: #e9ecef;
+  transition: background-color 0.2s ease;
+}
+
+  </style>
+</head>
+<body>
+
+  <body>
+
+<!-- ✅ Exact Navbar Match from home.ejs -->
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm w-100 z-3">
+  <div class="container d-flex align-items-center justify-content-between">
+    
+    <!-- 🔗 Logo -->
+    <a class="navbar-brand d-flex align-items-center me-3" href="/">
+      <img src="/images/tashalogo.png" alt="Tasha Logo" height="150" width="200">
+    </a>
+
+    <!-- 🔍 Search (optional, for consistency) -->
+    <form method="GET" action="/shop" class="d-none d-lg-flex flex-grow-1 me-4" role="search">
+      <input
+        class="form-control rounded-pill px-3"
+        name="search"
+        type="search"
+        placeholder="Search products..."
+        value="<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>"
+        style="min-width: 300px;"
+      />
+    </form>
+
+    <!-- ☰ Toggler for mobile -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- 🔗 Nav Links -->
+    <ul class="navbar-nav gap-3 align-items-center">
+      <li class="nav-item"><a class="nav-link" href="/home">Home</a></li>
+      <li class="nav-item"><a class="nav-link" href="/shop">Shop</a></li>
+      <li class="nav-item"><a class="nav-link" href="/about-us">About Us</a></li>
+      <li class="nav-item"><a class="nav-link" href="/contact-us">Contact</a></li>
+
+      <% if (role === "admin") { %>
+        <li class="nav-item">
+          <a class="nav-link fw-bold text-white px-3 py-2 rounded" href="/admin/dashboard" style="background-color: var(--primary-color);">
+            Admin Dashboard
+          </a>
+        </li>
+      <% } %>
+    </ul>
+  </div>
+</nav>
+
+  <div class="container-fluid">
+    <div class="row">
+      <!-- Sidebar -->
+     <nav class="col-md-3 bg-light border-end vh-100 d-flex flex-column p-3">
+  <h4 class="text-center mb-4">Admin Dashboard</h4>
+
+  <ul class="nav nav-pills flex-column gap-2">
+    <li class="nav-item">
+      <a href="/admin/dashboard?action=view" class="nav-link <%= action === 'view' ? 'active' : 'text-dark' %>">
+        🛒 Products
+      </a>
+    </li>
+    
+    <li class="nav-item">
+      <a href="/admin/dashboard?action=orders" class="nav-link <%= action === 'orders' ? 'active' : 'text-dark' %>">
+        📦 Orders
+      </a>
+    </li>
+  </ul>
+</nav>
+
+
+      <!-- Main Content -->
+      <div class="col-md-9 content-area">
+        <% if (action === 'view') { %>
+          <h3 class="dashboard-title">Manage Products</h3>
+          <%- include('admin-products') %>
+        <% } else if (action === 'add') { %>
+          <h3 class="dashboard-title">Add New Product</h3>
+          <%- include('admin-add-product') %>
+        <% } else if (action === 'orders') { %>
+          <h3 class="dashboard-title">All Orders</h3>
+          <%- include('admin-orders') %>
+        <% } else { %>
+          <p>Select an option from the sidebar.</p>
+        <% } %>
+      </div>
+    </div>
+  </div>
+
+  <!-- ❌ Error Modal -->
+  <div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-danger">
+        <div class="modal-header bg-danger text-white">
+          <h5 class="modal-title" id="errorModalLabel">Action Blocked</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body text-center">
+          ❌ This product has been ordered before and cannot be deleted.
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ✅ Bootstrap 5.3 JS + Modal Trigger Script -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("error") === "ordered") {
+      const errorModal = new bootstrap.Modal(document.getElementById("errorModal"));
+      errorModal.show();
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title><%= product.name %> - Tasha Enterprise</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+  <style>
+    .carousel-item img {
+      max-height: 500px;
+      object-fit: contain;
+      margin: 0 auto;
+    }
+    .product-section {
+      padding-top: 30px;
+    }
+    .product-details {
+      padding: 20px;
+    }
+    .price {
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: #3f51b5;
+    }
+
+    .price {
+  font-size: 1.8rem;
+  font-weight: bold;
+}
+
+    .size-btn {
+      margin: 0 5px 10px 0;
+    }
+
+    .carousel-control-prev-icon,
+.carousel-control-next-icon {
+  background-size: 100%, 100%;
+  background-repeat: no-repeat;
+}
+
+.navbar .nav-link {
+  color: #212529 !important;
+  font-weight: 500;
+}
+
+.navbar .nav-link:hover {
+  color: #3f51b5 !important;
+}
+
+  </style>
+</head>
+<body>
+
+<!-- ✅ Exact Navbar Match -->
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm w-100 z-3">
+  <div class="container d-flex align-items-center justify-content-between">
+    
+    <!-- 🔗 Logo -->
+    <a class="navbar-brand d-flex align-items-center me-3" href="/">
+      <img src="/images/tashalogo.png" alt="Tasha Logo" height="150" width="200">
+    </a>
+
+    <!-- 🔍 Search Bar -->
+<!-- 🔍 Search Bar -->
+<!-- 🔍 Smart Search Form (Live Suggestions) -->
+<form method="GET" action="/shop" class="d-none d-lg-flex flex-grow-1 me-4 position-relative" role="search" autocomplete="off">
+  <input
+    class="form-control rounded-pill px-3"
+    name="search"
+    type="search"
+    placeholder="Search products..."
+    id="searchInput"
+    autocomplete="off"
+    style="min-width: 300px;"
+    value="<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>"
+  />
+  <ul class="list-group position-absolute w-100 shadow" id="suggestionBox" style="top: 100%; z-index: 1000;"></ul>
+</form>
+
+
+
+
+    <!-- ☰ Toggler for mobile -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- 🔗 Nav Links -->
+    <ul class="navbar-nav gap-3 align-items-center">
+      <li class="nav-item"><a class="nav-link" href="/home">Home</a></li>
+      <li class="nav-item"><a class="nav-link" href="/shop">Shop</a></li>
+      <li class="nav-item"><a class="nav-link" href="/about-us">About Us</a></li>
+      <li class="nav-item"><a class="nav-link" href="/contact-us">Contact</a></li>
+
+      <% if (role === "admin") { %>
+        <li class="nav-item">
+          <a class="nav-link fw-bold text-white px-3 py-2 rounded" href="/admin/dashboard" style="background-color: var(--primary-color);">
+            Admin Dashboard
+          </a>
+        </li>
+      <% } %>
+      
+      <!-- 👋 User Welcome Message -->
+      <li class="nav-item">
+        <% if (user) { %>
+  <span class="user-welcome">Hi, <%= user.name %></span>
+<% } %>
+
+      </li>
+
+      <!-- 🛒 Cart Icon -->
+      <li class="nav-item">
+        <a class="nav-link position-relative" href="/cart">
+          <img src="/images/cart.png" alt="Cart" width="24" height="24">
+          <% if (cartCount > 0) { %>
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+              <%= cartCount %>
+            </span>
+          <% } %>
+        </a>
+      </li>
+
+      <!-- 👤 User Dropdown -->
+      <li class="nav-item dropdown user-dropdown">
+        <a
+          class="nav-link dropdown-toggle d-flex align-items-center"
+          href="#"
+          id="userDropdown"
+          role="button"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+        >
+          <img src="/images/human.png" alt="User" width="20" height="20" class="ms-1">
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end mt-2" aria-labelledby="userDropdown">
+          
+          <li><a class="dropdown-item" href="/account/personal-info">Personal Information</a></li>
+          <li><a class="dropdown-item" href="/account/order">Order</a></li>
+          <li><hr class="dropdown-divider" /></li>
+          <li><a class="dropdown-item text-danger" href="/logout">Logout</a></li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+<!-- 🛍 Product Detail Section -->
+<div class="container product-section">
+  <div class="row">
+    <!-- 📸 Image Carousel -->
+    <div class="col-md-6">
+      <div id="productCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="5000">
+
+        <div class="carousel-inner">
+          <% images.forEach((img, index) => { %>
+            <div class="carousel-item <%= index === 0 ? 'active' : '' %>">
+              <img src="<%= img %>" class="d-block w-100" alt="Product Image">
+            </div>
+          <% }) %>
+        </div>
+        <% if (images.length > 1) { %>
+        <button class="carousel-control-prev" type="button" data-bs-target="#productCarousel" data-bs-slide="prev">
+          <span class="carousel-control-prev-icon bg-dark rounded-circle p-2"></span>
+
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#productCarousel" data-bs-slide="next">
+          <span class="carousel-control-next-icon bg-dark rounded-circle p-2"></span>
+
+        </button>
+        <% } %>
+      </div>
+    </div>
+
+    <!-- 📝 Product Info -->
+    <div class="col-md-6 product-details">
+      <h2><%= product.name %></h2>
+      <% if (product.sale_price) { %>
+  <p class="price text-danger">RM<%= product.sale_price %> <span class="text-muted text-decoration-line-through ms-2">RM<%= product.price %></span></p>
+<% } else { %>
+  <p class="price">RM<%= product.price %></p>
+<% } %>
+
+      <p><%= product.description %></p>
+
+      <form action="/add-to-cart" method="POST" class="mt-4">
+        <input type="hidden" name="product_id" value="<%= product.id %>">
+        <input type="hidden" name="size" id="selectedSize">
+        
+        <!-- Size Selection -->
+        <% if (product.sizes) {
+            const sizeList = product.sizes.split(',');
+        %>
+        <div class="mb-3">
+          <label class="fw-bold mb-2">Size:</label><br>
+          <% sizeList.forEach((size, i) => {
+               const trimSize = size.trim();
+               const stock = stockMap[trimSize] || 0;
+               const isDisabled = stock <= 0;
+               const isLow = stock > 0 && stock <= 3;
+          %>
+            <input type="radio" class="btn-check" name="size_radio" id="size<%= i %>" value="<%= trimSize %>" <%= isDisabled ? 'disabled' : (i === 0 ? 'checked' : '') %>>
+            <label class="btn size-btn btn-outline-<%= isDisabled ? 'secondary' : isLow ? 'warning' : 'dark' %>" for="size<%= i %>">
+              <%= trimSize %> <%= isDisabled ? '❌' : isLow ? '⚠' : '' %>
+            </label>
+          <% }) %>
+        </div>
+        <% } %>
+
+        <!-- Quantity Selector -->
+        <div class="d-flex align-items-center gap-2 mb-2">
+          <label for="qty" class="fw-bold">Quantity:</label>
+          <button type="button" class="btn btn-outline-secondary" onclick="changeQty(-1)">-</button>
+          <input id="qty" name="quantity" type="number" value="1" min="1" class="form-control text-center" style="width: 60px;" readonly>
+          <button type="button" id="plusBtn" class="btn btn-outline-secondary" onclick="changeQty(1)" disabled>+</button>
+
+        </div>
+        <div id="stockStatus" class="text-danger small mb-3"></div>
+
+        <button type="submit" class="btn btn-lg w-100 text-white" style="background-color: #3f51b5;">Add to Cart</button>
+
+      </form>
+    </div>
+  </div>
+</div>
+
+
+
+<hr class="my-4">
+<h5>👗 Try It On</h5>
+<form id="tryOnForm">
+  <input type="file" id="modelImage" accept="image/*" class="form-control mb-2" required>
+  <button type="submit" class="btn btn-outline-dark w-100">Generate Virtual Try-On</button>
+</form>
+<div id="tryonResult" class="mt-3 text-center"></div>
+
+<!-- ⭐️ Recommended Products Section -->
+<div class="container mt-5">
+  <h4 class="mb-3">Recommended for You</h4>
+  <div class="row">
+    <% if (relatedProducts && relatedProducts.length > 0) { %>
+      <% relatedProducts.forEach(rp => { %>
+        <div class="col-md-4 mb-4">
+          <div class="card h-100 border-0 shadow-sm">
+            <a href="/product/<%= rp.id %>">
+              <img src="<%= rp.image_url %>" class="card-img-top" style="height: 300px; object-fit: cover;" alt="<%= rp.name %>">
+            </a>
+            <div class="card-body text-center">
+              <h6 class="card-title"><%= rp.name %></h6>
+              <% if (rp.sale_price) { %>
+                <p class="text-danger fw-bold">RM<%= rp.sale_price %> <span class="text-muted text-decoration-line-through">RM<%= rp.price %></span></p>
+              <% } else { %>
+                <p class="fw-bold">RM<%= rp.price %></p>
+              <% } %>
+              <a href="/product/<%= rp.id %>" class="btn btn-sm btn-outline-dark">View</a>
+            </div>
+          </div>
+        </div>
+      <% }) %>
+    <% } else { %>
+      <p class="text-muted">No related products found.</p>
+    <% } %>
+  </div>
+</div>
+
+
+<!-- ❌ Stock Limit Modal -->
+<div class="modal fade" id="stockErrorModal" tabindex="-1" aria-labelledby="stockErrorModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-danger">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title">Stock Limit Reached</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-center">
+        ❌ You’ve reached the available stock limit for this size.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ✅ Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  const stockData = <%- JSON.stringify(stockMap) %>;
+  const qtyInput = document.getElementById('qty');
+  const plusBtn = document.getElementById('plusBtn');
+  const sizeRadios = document.querySelectorAll('input[name="size_radio"]');
+  const stockStatus = document.getElementById('stockStatus');
+  const selectedSizeInput = document.getElementById('selectedSize');
+
+  function updateStockUI(size) {
+    const stock = stockData[size] || 1;
+    qtyInput.max = stock;
+    qtyInput.value = 1;
+    plusBtn.disabled = !size || stock <= 1;
+
+    updateStockWarning(stock, 1);
+    selectedSizeInput.value = size;
+  }
+
+  function updateStockWarning(stock, qty) {
+    if (qty >= stock) {
+      stockStatus.innerText = "❌ You've reached the available stock limit.";
+      plusBtn.disabled = true;
+    } else if (stock <= 3) {
+      stockStatus.innerText = "⚠️ Product low in stock!";
+    } else {
+      stockStatus.innerText = "";
+      plusBtn.disabled = false;
+    }
+  }
+
+  function changeQty(delta) {
+    let qty = parseInt(qtyInput.value);
+    const max = parseInt(qtyInput.max);
+    qty += delta;
+    if (qty < 1) qty = 1;
+    if (qty > max) qty = max;
+    qtyInput.value = qty;
+    updateStockWarning(max, qty);
+  }
+
+  // Init size and stock
+  sizeRadios.forEach(radio => {
+    radio.addEventListener("change", () => {
+      updateStockUI(radio.value.trim());
+    });
+    if (radio.checked) {
+      updateStockUI(radio.value.trim());
+    }
+  });
+
+  // Show stock error modal if redirected with error
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get("error") === "stocklimit") {
+    const stockModal = new bootstrap.Modal(document.getElementById("stockErrorModal"));
+    stockModal.show();
+  }
+</script>
+
+<script>
+  const tryOnForm = document.getElementById("tryOnForm");
+  const modelInput = document.getElementById("modelImage");
+  const tryonResult = document.getElementById("tryonResult");
+
+  tryOnForm.addEventListener("submit", async function (e) {
+    e.preventDefault();
+    tryonResult.innerHTML = "🕒 Generating preview...";
+
+    const file = modelInput.files[0];
+    const formData = new FormData();
+    formData.append("userImage", file);
+
+    // ✅ Upload model image to your backend
+    const uploadRes = await fetch("/upload-image", {
+      method: "POST",
+      body: formData
+    });
+
+    const { success, imageUrl, error } = await uploadRes.json();
+    if (!success) {
+      tryonResult.innerHTML = `❌ Upload failed: ${error}`;
+      return;
+    }
+
+    const garmentImageUrl = "<%= images[0] %>";
+    let rawCategory = "<%= product.category.toLowerCase() %>";
+    let category = "auto";
+
+    if (rawCategory.includes("shirt") || rawCategory.includes("top") || rawCategory.includes("hoodie") || rawCategory.includes("t-shirt") || rawCategory.includes("jacket") || rawCategory.includes("clothing") || rawCategory.includes("new in")) {
+      category = "tops";
+    } else if (rawCategory.includes("pant") || rawCategory.includes("jeans") || rawCategory.includes("bottom")) {
+      category = "bottoms";
+    } else if (rawCategory.includes("dress")) {
+      category = "one-pieces";
+    }
+
+    console.log("📤 Sending to FASHN.ai:", {
+      modelImageUrl: imageUrl,
+      garmentImageUrl: garmentImageUrl,
+      category: category
+    });
+
+    console.log("✅ Try-on category:", category);
+console.log("👕 Garment image URL:", garmentImageUrl);
+console.log("🧍 Model image URL:", imageUrl);
+
+
+    const response = await fetch("/api/fashn-tryon", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        modelImageUrl: imageUrl,
+        garmentImageUrl: garmentImageUrl,
+        category: category
+      })
+    });
+
+    const result = await response.json();
+    if (result.success) {
+      tryonResult.innerHTML = `<img src="${result.image}" alt="Try-On Result" class="img-fluid mt-2" />`;
+    } else {
+      tryonResult.innerHTML = `❌ Try-on failed: ${result.error}`;
+    }
+  });
+</script>
+
+
+<%- include('partials/chatbot') %>
+</body>
+</html>

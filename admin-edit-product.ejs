@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Edit Product - Admin</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+<!-- ✅ Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+  <div class="container">
+    <a class="navbar-brand" href="/admin/dashboard">Tasha Admin</a>
+    <div class="collapse navbar-collapse">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item"><a class="nav-link" href="/admin/dashboard?action=view">Products</a></li>
+        <li class="nav-item"><a class="nav-link" href="/admin/dashboard?action=orders">Orders</a></li>
+        <li class="nav-item"><a class="nav-link" href="/logout">Logout</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- ✅ Main Container -->
+<div class="container">
+  <h3 class="mb-4">Edit Product</h3>
+
+  <form action="/admin/edit/<%= product.id %>" method="POST" enctype="multipart/form-data">
+    <div class="mb-3">
+      <label>Product Name</label>
+      <input type="text" name="name" value="<%= product.name %>" class="form-control" required>
+    </div>
+
+    <div class="mb-3">
+      <label>Target Group</label>
+      <select name="target_group" class="form-control" required>
+        <option value="Men" <%= product.target_group === 'Men' ? 'selected' : '' %>>Men</option>
+        <option value="Women" <%= product.target_group === 'Women' ? 'selected' : '' %>>Women</option>
+        <option value="Kids" <%= product.target_group === 'Kids' ? 'selected' : '' %>>Kids</option>
+      </select>
+    </div>
+
+    <div class="mb-3">
+      <label>Category</label>
+      <select name="category" class="form-control" required>
+        <option value="Clothing" <%= product.category === 'Clothing' ? 'selected' : '' %>>Clothing</option>
+        <option value="Shoes" <%= product.category === 'Shoes' ? 'selected' : '' %>>Shoes</option>
+        <option value="Accessories" <%= product.category === 'Accessories' ? 'selected' : '' %>>Accessories</option>
+        <option value="Bag" <%= product.category === 'Bag' ? 'selected' : '' %>>Bag</option>
+        <option value="Sale" <%= product.category === 'Sale' ? 'selected' : '' %>>Sale</option>
+        <option value="New In" <%= product.category === 'New In' ? 'selected' : '' %>>New In</option>
+      </select>
+    </div>
+
+    <div class="mb-3">
+      <label>Price</label>
+      <input type="number" name="price" value="<%= product.price %>" class="form-control" required>
+    </div>
+
+    <div class="mb-3">
+      <label>Sale Price</label>
+      <input type="number" name="sale_price" value="<%= product.sale_price || '' %>" class="form-control" placeholder="Enter sale price or leave blank">
+    </div>
+
+    <!-- 👕 Size & Stock Editor -->
+<div class="mb-3">
+  <label>Sizes & Stock</label><br>
+  <% if (Array.isArray(productStock)) { %>
+    <% productStock.forEach(function(stockItem) { %>
+      <div class="d-flex align-items-center mb-2">
+        <label class="me-2" style="width: 60px;"><%= stockItem.size %></label>
+        <input type="hidden" name="sizes[]" value="<%= stockItem.size %>">
+        <input type="number" name="stock_<%= stockItem.size %>" value="<%= stockItem.stock %>" class="form-control" style="width: 100px;" required>
+      </div>
+    <% }) %>
+  <% } else { %>
+    <p class="text-danger">Stock info not available</p>
+  <% } %>
+</div>
+
+
+    <div class="mb-3">
+      <label>Description</label>
+      <textarea name="description" class="form-control"><%= product.description %></textarea>
+    </div>
+
+<div class="mb-3">
+  <label>Current Images</label><br>
+  <% if (Array.isArray(productImages) && productImages.length > 0) { %>
+    <% productImages.forEach(function(img) { %>
+      <div class="position-relative d-inline-block me-2 mb-2">
+        <img src="<%= img.image_url %>" style="height: 80px; border: 1px solid #ccc; border-radius: 4px;">
+        <input type="hidden" name="existing_images[]" value="<%= img.image_url %>">
+        <button type="button" class="btn-close position-absolute top-0 start-100 translate-middle" aria-label="Remove" onclick="removeImage(this, '<%= img.image_url %>')"></button>
+      </div>
+    <% }) %>
+  <% } else { %>
+    <p class="text-muted">No images uploaded yet.</p>
+  <% } %>
+</div>
+
+
+
+
+    <div class="mb-3">
+      <label>Add New Images</label>
+      <input type="file" name="images" class="form-control" multiple accept="image/*">
+      <small class="form-text text-muted">You can upload multiple images. Existing images will be kept.</small>
+    </div>
+
+    <div class="mb-3">
+      <label>Featured Product?</label>
+      <select name="featured" class="form-control">
+        <option value="1" <%= product.featured ? 'selected' : '' %>>Yes</option>
+        <option value="0" <%= !product.featured ? 'selected' : '' %>>No</option>
+      </select>
+    </div>
+
+        <button type="submit" class="btn btn-success">Update Product</button>
+    <a href="/admin/dashboard?action=view" class="btn btn-secondary">Cancel</a>
+  </form>
+</div>
+
+<script>
+  function removeImage(button, imageUrl) {
+    const container = button.closest('.position-relative');
+    container.remove();
+
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'delete_images[]';
+    input.value = imageUrl;
+    document.querySelector('form').appendChild(input);
+  }
+</script>
+
+</body>
+</html>

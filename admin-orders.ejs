@@ -1,0 +1,87 @@
+<!-- admin-orders.ejs -->
+<div class="container">
+  <h3 class="mb-4">Manage Orders</h3>
+
+  <form class="row mb-4" method="GET" action="/admin/dashboard">
+  <input type="hidden" name="action" value="orders" />
+
+  <div class="col-md-4">
+    <input
+      type="text"
+      name="order_search"
+      class="form-control"
+      placeholder="Search Order Number (e.g. M74371)"
+      value="<%= typeof query !== 'undefined' ? query : '' %>"
+    />
+  </div>
+
+  <div class="col-md-4">
+    <select name="sort" class="form-select">
+      <option value="newest" <%= sort === 'newest' ? 'selected' : '' %>>Newest</option>
+      <option value="oldest" <%= sort === 'oldest' ? 'selected' : '' %>>Oldest</option>
+      <option value="Processing" <%= sort === 'Processing' ? 'selected' : '' %>>Processing</option>
+      <option value="Handed over to logistic" <%= sort === 'Handed over to logistic' ? 'selected' : '' %>>Handed over to logistic</option>
+      <option value="Out for delivery" <%= sort === 'Out for delivery' ? 'selected' : '' %>>Out for delivery</option>
+      <option value="Delivered" <%= sort === 'Delivered' ? 'selected' : '' %>>Delivered</option>
+      <option value="Cancelled" <%= sort === 'Cancelled' ? 'selected' : '' %>>Cancelled</option>
+      <option value="Cancelled and refunded" <%= sort === 'Cancelled and refunded' ? 'selected' : '' %>>Cancelled and refunded</option>
+      <option value="Return" <%= sort === 'Return' ? 'selected' : '' %>>Return</option>
+      <option value="Return and Refunded" <%= sort === 'Return and Refunded' ? 'selected' : '' %>>Return and Refunded</option>
+    </select>
+  </div>
+
+  <div class="col-md-4">
+    <button type="submit" class="btn btn-success">Search</button>
+
+  </div>
+</form>
+
+
+  <% if (orders.length === 0) { %>
+    <p>No orders available.</p>
+  <% } else { %>
+    <% orders.forEach(order => { %>
+      <div class="card mb-4 shadow-sm">
+        <div class="card-header d-flex justify-content-between">
+          <div><strong>Order #: </strong><%= order.order_number %></div>
+          <div>
+            <form action="/admin/update-order-status" method="POST" class="d-flex align-items-center">
+              <input type="hidden" name="order_id" value="<%= order.id %>">
+              <select name="status" class="form-select form-select-sm me-2" onchange="this.form.submit()">
+                <option value="Processing" <%= order.status === 'Processing' ? 'selected' : '' %>>Processing</option>
+                <option value="Handed over to logistic" <%= order.status === 'Handed over to logistic' ? 'selected' : '' %>>Handed over to logistic</option>
+                <option value="Out for delivery" <%= order.status === 'Out for delivery' ? 'selected' : '' %>>Out for delivery</option>
+                <option value="Delivered" <%= order.status === 'Delivered' ? 'selected' : '' %>>Delivered</option>
+                <option value="Cancelled" <%= order.status === 'Cancelled' ? 'selected' : '' %>>Cancelled</option>
+                <option value="Cancelled and refunded" <%= order.status === 'Cancelled and refunded' ? 'selected' : '' %>>Cancelled and refunded</option>
+                <option value="Return" <%= order.status === 'Return' ? 'selected' : '' %>>Return</option>
+                <option value="Return and Refunded" <%= order.status === 'Return and Refunded' ? 'selected' : '' %>>Return and Refunded</option>
+              </select>
+            </form>
+          </div>
+        </div>
+
+        <div class="card-body">
+          <p><strong>Customer:</strong> <%= order.customer_name %></p>
+          <p><strong>Email:</strong> <%= order.email %></p>
+          <p><strong>Phone:</strong> <%= order.phone %></p>
+          <p><strong>Address:</strong><br><%= order.address %>, <%= order.postcode %></p>
+          <p><strong>Status:</strong> <%= order.status %></p>
+          <p><strong>Placed On:</strong> <%= new Date(order.created_at).toLocaleDateString() %></p>
+          <p><strong>Total:</strong> RM<%= order.total.toFixed(2) %></p>
+
+          <% if (itemsMap[order.id]) { %>
+            <div class="row mt-3">
+              <% itemsMap[order.id].forEach(item => { %>
+                <div class="col-md-4 text-center mb-3">
+                  <img src="<%= item.image_url %>" alt="<%= item.product_name %>" class="img-fluid" style="max-height: 100px;">
+                  <p class="mt-2"><%= item.product_name %> (Qty: <%= item.quantity %>)</p>
+                </div>
+              <% }) %>
+            </div>
+          <% } %>
+        </div>
+      </div>
+    <% }) %>
+  <% } %>
+</div>

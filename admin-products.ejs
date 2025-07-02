@@ -1,0 +1,41 @@
+<form class="d-flex mb-4" method="GET" action="/admin/dashboard">
+  <input type="hidden" name="action" value="view">
+  <input class="form-control me-2" type="search" name="q" placeholder="Search products..." aria-label="Search" value="<%= typeof query !== 'undefined' ? query : '' %>">
+  <button class="btn btn-outline-primary" type="submit">Search</button>
+</form>
+
+
+<!-- Product Table -->
+<table class="table table-bordered">
+  <thead class="thead-dark">
+    <tr>
+      <th>ID</th>
+      <th>Product Name</th>
+      <th>Gender</th>
+      <th>Category</th>
+      <th>Price</th>
+      <th>Image</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% products.forEach(product => { %>
+      <tr>
+        <td><%= product.id %></td>
+        <td><%= product.name %></td>
+        <td><%= product.target_group %></td>
+
+        <td><%= product.category %></td>
+        <td><%= product.price %></td>
+        <td><img src="<%= product.image %>" alt="Image" width="60"></td>
+
+        <td>
+          <a href="/admin/edit/<%= product.id %>" class="btn btn-sm" style="background-color: #6c757d; color: white;">Edit</a>
+  <a href="/admin/delete/<%= product.id %>" class="btn btn-sm" style="background-color: #dc3545; color: white;">Delete</a>
+        </td>
+      </tr>
+    <% }) %>
+  </tbody>
+</table>
+
+<a href="/admin/dashboard?action=add" class="btn btn-success mt-3">+ Add New Product</a>
