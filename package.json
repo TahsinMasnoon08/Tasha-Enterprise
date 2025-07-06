@@ -1,0 +1,28 @@
+{
+  "name": "tasha-enterprise-development",
+  "version": "1.0.0",
+  "description": "My first website with node js",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.9.0",
+    "bcrypt": "^5.1.1",
+    "body-parser": "^2.2.0",
+    "dotenv": "^16.6.1",
+    "ejs": "^3.1.10",
+    "express": "^5.1.0",
+    "express-session": "^1.18.1",
+    "form-data": "^4.0.2",
+    "multer": "^2.0.0",
+    "mysql": "^2.18.1",
+    "node-fetch": "^3.3.2",
+    "nodemailer": "^7.0.3",
+    "openai": "^5.1.1",
+    "stripe": "^18.2.1"
+  }
+}
