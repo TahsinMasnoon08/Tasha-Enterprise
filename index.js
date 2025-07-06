@@ -1,4 +1,5 @@
-const IMGBB_API_KEY = "434df85246c681a776092f3b1b8d95fc";
+require("dotenv").config();
+const IMGBB_API_KEY = process.env.IMGBB_API_KEY;
 const express = require("express");
 const mysql = require("mysql");
 const bodyParser = require("body-parser");
@@ -8,19 +9,20 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 const axios = require("axios");
-const REPLICATE_API_TOKEN = "r8_MVjBKpn46Y56MdBgLkHyhhr8WbS8ns63ITFzw";
+const REPLICATE_API_TOKEN = process.env.REPLICATE_API_TOKEN;
 const nodemailer = require("nodemailer");
 const crypto = require("crypto");
 
 
 
 const transporter = nodemailer.createTransport({
-  service: "gmail", // or your preferred email service
+  service: "gmail",
   auth: {
-    user: "masnoonsami08@gmail.com",
-    pass: "wjcu vpnq rdwy onnd" // Use app password (NOT your Gmail password)
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS
   }
 });
+
 
 async function tryOnImage(userImageUrl, clothingImageUrl) {
   console.log("Attempting garment transfer using lucataco model");
@@ -58,18 +60,20 @@ app.set("view engine", "ejs");
 
 app.use(
   session({
-    secret: "tasha-secret-key",
+    secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: true,
   })
 );
 
+
 const db = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "",
-  database: "tasha_db",
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
 });
+
 
 db.connect((err) => {
   if (err) console.error("❌ DB connection failed:", err);
@@ -276,13 +280,14 @@ app.post("/forgot", (req, res) => {
     if (err) return res.send("❌ Error generating OTP");
 
     // Send the OTP via Gmail
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: "masnoonsami08@gmail.com",
-    pass: "wjcu vpnq rdwy onnd"
-      }
-    });
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS
+  }
+});
+
 
     const mailOptions = {
       from: "Tasha Enterprise <YOUR_GMAIL@gmail.com>",
@@ -1410,7 +1415,8 @@ app.get("/order", (req, res) => {
 
 
 //Checkout Session
-const stripeBackend = require("stripe")("sk_test_51RXzCaICy91dN23racpcN8mS66xhxpFdDTWjCm41nP75vW5jICZNXEZcE4E1aHuln40Rr6GRDxavl2cdgkY5biwm00y4r3BBQr"); // Replace with your secret key
+const stripeBackend = require("stripe")(process.env.STRIPE_SECRET_KEY);
+
 
 app.post("/create-checkout-session", async (req, res) => {
   if (!req.session.user || req.session.role !== "user") return res.status(401).send("Unauthorized");
@@ -1465,7 +1471,7 @@ app.post("/create-checkout-session", async (req, res) => {
 app.get("/stripe-success", async (req, res) => {
   if (!req.session.user || req.session.role !== "user") return res.redirect("/login");
 
-  const stripe = require("stripe")("sk_test_51RXzCaICy91dN23racpcN8mS66xhxpFdDTWjCm41nP75vW5jICZNXEZcE4E1aHuln40Rr6GRDxavl2cdgkY5biwm00y4r3BBQr");
+  const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
   const sessionId = req.query.session_id;
   const userId = req.session.user.id;
 
@@ -1574,7 +1580,7 @@ app.get("/stripe-success", async (req, res) => {
 const OpenAI = require("openai");
 
 const openai = new OpenAI({
-  apiKey: "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" // replace with your actual key
+  apiKey: process.env.OPENAI_API_KEY,
 });
 
 const systemPrompt = `
@@ -1671,7 +1677,7 @@ if (modelImageUrl.startsWith("/uploads/")) {
       },
       {
         headers: {
-          Authorization: `Bearer fa-zjKuEECRjNs2-gE44iZTehi6GpiPgv2yi6h3Q`
+           Authorization: `Bearer ${process.env.FASHN_API_KEY}`
         }
       }
     );
@@ -1685,7 +1691,8 @@ if (modelImageUrl.startsWith("/uploads/")) {
     for (let i = 0; i < 50; i++) {
       await new Promise(r => setTimeout(r, 2000));
       statusData = (await axios.get(statusUrl, {
-        headers: { Authorization: `Bearer fa-zjKuEECRjNs2-gE44iZTehi6GpiPgv2yi6h3Q` }
+        headers: { Authorization: `Bearer ${process.env.FASHN_API_KEY}` }
+
       })).data;
 
       if (statusData.status === "completed") {
